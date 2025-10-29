@@ -148,10 +148,6 @@ class BACnetSimulator:
             protocolServicesSupported=ServicesSupported(services_list),
         )
         
-        # Verify the property is set
-        logger.info(f"Device protocolServicesSupported: {device_object.protocolServicesSupported}")
-        logger.info(f"Device properties available: {dir(device_object)}")
-        
         # Create network port object (required for BACpypes3)
         network_port_object = NetworkPortObject(
             f"{address}:{port}",
