@@ -1,0 +1,156 @@
+# BACnet Device Simulator Configuration
+
+# Device settings
+device:
+  name: "BACnet Test Device"
+  instance: 1001
+  description: "Virtual BACnet Device for Testing"
+  vendor_id: 999
+  model: "Virtual BACnet Simulator v1.0"
+
+# Network settings
+network:
+  # Use "host" to auto-detect the local interface
+  # Or use specific IP with netmask like "192.168.1.100/24"
+  # Or use IP:port like "192.168.1.100:47808"
+  address: "host"
+  port: 47808
+
+# BACnet objects to create
+objects:
+  # Analog Value - Temperature sensor simulation
+  - type: analog-value
+    instance: 1
+    name: "Temperature"
+    initial_value: 22.5
+    units: "degreesCelsius"
+    description: "Simulated temperature sensor"
+    simulate: true
+    simulation:
+      type: sine              # Options: random, sine, increment
+      interval: 2.0           # Update interval in seconds
+      amplitude: 5.0          # For sine wave
+      offset: 22.0            # For sine wave
+      frequency: 0.05         # For sine wave (cycles per second)
+  
+  # Analog Value - Humidity simulation
+  - type: analog-value
+    instance: 2
+    name: "Humidity"
+    initial_value: 45.0
+    units: "percentRelativeHumidity"
+    description: "Simulated humidity sensor"
+    simulate: true
+    simulation:
+      type: random
+      interval: 3.0
+      min: 30.0
+      max: 70.0
+  
+  # Analog Input - Pressure sensor
+  - type: analog-input
+    instance: 1
+    name: "Pressure"
+    initial_value: 101.3
+    units: "kilopascals"
+    description: "Simulated pressure sensor"
+    simulate: true
+    simulation:
+      type: random
+      interval: 5.0
+      min: 98.0
+      max: 105.0
+  
+  # Analog Output - Setpoint
+  - type: analog-output
+    instance: 1
+    name: "Temperature_Setpoint"
+    initial_value: 21.0
+    units: "degreesCelsius"
+    description: "Temperature setpoint control"
+    simulate: false
+  
+  # Binary Value - Fan status
+  - type: binary-value
+    instance: 1
+    name: "Fan_Status"
+    initial_value: 0
+    description: "Fan on/off status"
+    simulate: true
+    simulation:
+      type: toggle            # Options: toggle, random
+      interval: 10.0
+  
+  # Binary Input - Door sensor
+  - type: binary-input
+    instance: 1
+    name: "Door_Sensor"
+    initial_value: 0
+    description: "Door open/closed sensor"
+    simulate: true
+    simulation:
+      type: random
+      interval: 15.0
+  
+  # Binary Output - Alarm output
+  - type: binary-output
+    instance: 1
+    name: "Alarm_Output"
+    initial_value: 0
+    description: "Alarm output control"
+    simulate: false
+  
+  # Multi-state Value - Operating mode
+  - type: multi-state-value
+    instance: 1
+    name: "Operating_Mode"
+    initial_value: 1
+    number_of_states: 4
+    state_text: ["Off", "Cool", "Heat", "Auto"]
+    description: "HVAC operating mode"
+    simulate: true
+    simulation:
+      type: cycle             # Options: cycle, random
+      interval: 20.0
+  
+  # Multi-state Input - System status
+  - type: multi-state-input
+    instance: 1
+    name: "System_Status"
+    initial_value: 1
+    number_of_states: 3
+    state_text: ["Normal", "Warning", "Alarm"]
+    description: "System status indicator"
+    simulate: true
+    simulation:
+      type: random
+      interval: 30.0
+  
+  # Additional analog values for testing
+  - type: analog-value
+    instance: 3
+    name: "Power_Consumption"
+    initial_value: 1500.0
+    units: "watts"
+    description: "Power consumption meter"
+    simulate: true
+    simulation:
+      type: random
+      interval: 4.0
+      min: 1000.0
+      max: 3000.0
+  
+  - type: analog-value
+    instance: 4
+    name: "CO2_Level"
+    initial_value: 400.0
+    units: "partsPerMillion"
+    description: "CO2 concentration sensor"
+    simulate: true
+    simulation:
+      type: increment
+      interval: 3.0
+      step: 10.0
+      min: 400.0
+      max: 1000.0
+
