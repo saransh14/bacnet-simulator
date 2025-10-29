@@ -50,6 +50,11 @@ logger = logging.getLogger(__name__)
 class BroadcastApplication(Application):
     """Application that ensures proper Who-Is/I-Am broadcast handling"""
     
+    async def indication(self, pdu):
+        """Log all incoming PDUs for debugging"""
+        logger.info(f"[NETWORK] Received PDU: {pdu.__class__.__name__} from {pdu.pduSource}")
+        await super().indication(pdu)
+    
     async def do_WhoIsRequest(self, apdu):
         """Override to ensure I-Am goes to broadcast"""
         logger.info(f">>> Received Who-Is from {apdu.pduSource}")
@@ -134,18 +139,12 @@ class BACnetSimulator:
             protocolServicesSupported=ServicesSupported(services_list),
         )
         
-        # Create network port object (required for BACpypes3)
-        network_port_object = NetworkPortObject(
-            f"{address}:{port}",
-            objectIdentifier=("network-port", 1),
-            objectName="NetworkPort-1",
-        )
+        # Create the application first with just the device
+        # This creates the application and initializes the network
+        logger.info(f"Creating BACnet application on {address}:{port}")
+        self.app = BroadcastApplication(device_object, Address(f"{address}:{port}"))
         
-        # Create the application with both device and network port
-        # Use BroadcastApplication to ensure proper Who-Is/I-Am handling
-        self.app = BroadcastApplication.from_object_list(
-            [device_object, network_port_object]
-        )
+        logger.info(f"Application created successfully")
         
         logger.info(f"BACnet device created: {device_object.objectName}")
         logger.info(f"Device Instance: {device_object.objectIdentifier[1]}")
