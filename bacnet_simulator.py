@@ -28,8 +28,7 @@ from bacpypes3.local.multistate import (
 from bacpypes3.primitivedata import Real, Date, Time
 from bacpypes3.basetypes import DateTime, StatusFlags, ServicesSupported
 from bacpypes3.constructeddata import AnyAtomic
-from bacpypes3.pdu import Address, LocalBroadcast
-from bacpypes3.apdu import WhoIsRequest
+from bacpypes3.pdu import Address
 
 # Module logger
 _debug = 0
@@ -45,34 +44,6 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
-
-
-@bacpypes_debugging
-class BroadcastAwareApplication(Application):
-    """
-    Custom Application that properly handles Who-Is requests with broadcast I-Am responses
-    """
-    
-    async def do_WhoIsRequest(self, apdu):
-        """Handle Who-Is requests and respond with I-Am to broadcast"""
-        # Get device instance from our device object
-        device_instance = self.device_object.objectIdentifier[1]
-        
-        # Check if this Who-Is is filtered to specific device instances
-        if apdu.deviceInstanceRangeLowLimit is not None:
-            if device_instance < apdu.deviceInstanceRangeLowLimit:
-                return
-        if apdu.deviceInstanceRangeHighLimit is not None:
-            if device_instance > apdu.deviceInstanceRangeHighLimit:
-                return
-        
-        # Log the Who-Is request
-        logger.info(f"Received Who-Is from {apdu.pduSource}")
-        
-        # Respond with I-Am to local broadcast
-        # This sends to broadcast address (e.g., 192.168.29.255)
-        logger.info(f"Sending I-Am response to broadcast")
-        self.i_am(address=LocalBroadcast())
 
 
 @bacpypes_debugging
@@ -145,8 +116,8 @@ class BACnetSimulator:
         )
         
         # Create the application with both device and network port
-        # Use BroadcastAwareApplication for logging and proper Who-Is/I-Am handling
-        self.app = BroadcastAwareApplication.from_object_list(
+        # BACpypes3 Application automatically handles Who-Is/I-Am correctly
+        self.app = Application.from_object_list(
             [device_object, network_port_object]
         )
         

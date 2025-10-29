@@ -10,10 +10,9 @@ device:
 
 # Network settings
 network:
-  # Bind to all interfaces (0.0.0.0) to receive broadcasts
-  # The I-Am response will come from the machine's actual IP (192.168.29.27)
-  # This is required to receive Who-Is broadcasts on 192.168.29.255
-  address: "0.0.0.0/0"
+  # Use the actual IP address of this machine with /24 netmask
+  # This allows proper broadcast reception on 192.168.29.255
+  address: "192.168.29.27/24"
   port: 47808
 
 # BACnet objects to create
