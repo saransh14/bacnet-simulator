@@ -50,24 +50,29 @@ logger = logging.getLogger(__name__)
 @bacpypes_debugging
 class BroadcastAwareApplication(Application):
     """
-    Custom Application that logs all BACnet traffic and handles Who-Is properly
+    Custom Application that properly handles Who-Is requests with broadcast I-Am responses
     """
     
-    async def indication(self, apdu):
-        """Log all incoming requests"""
-        logger.info(f"Received {apdu.__class__.__name__} from {apdu.pduSource}")
-        # Call parent implementation
-        await super().indication(apdu)
-    
     async def do_WhoIsRequest(self, apdu):
-        """Handle Who-Is requests"""
-        logger.info(f"==> Who-Is request received from {apdu.pduSource}")
-        logger.info(f"    Range: {apdu.deviceInstanceRangeLowLimit} - {apdu.deviceInstanceRangeHighLimit}")
+        """Handle Who-Is requests and respond with I-Am to broadcast"""
+        # Get device instance from our device object
+        device_instance = self.device_object.objectIdentifier[1]
         
-        # Call the parent class implementation which handles the response
-        await super().do_WhoIsRequest(apdu)
+        # Check if this Who-Is is filtered to specific device instances
+        if apdu.deviceInstanceRangeLowLimit is not None:
+            if device_instance < apdu.deviceInstanceRangeLowLimit:
+                return
+        if apdu.deviceInstanceRangeHighLimit is not None:
+            if device_instance > apdu.deviceInstanceRangeHighLimit:
+                return
         
-        logger.info(f"<== I-Am response sent")
+        # Log the Who-Is request
+        logger.info(f"Received Who-Is from {apdu.pduSource}")
+        
+        # Respond with I-Am to local broadcast
+        # This sends to broadcast address (e.g., 192.168.29.255)
+        logger.info(f"Sending I-Am response to broadcast")
+        self.i_am(address=LocalBroadcast())
 
 
 @bacpypes_debugging
