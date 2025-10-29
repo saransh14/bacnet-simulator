@@ -6,6 +6,7 @@ A flexible BACnet device simulator for testing BACnet applications.
 Supports multiple object types with configurable properties.
 """
 
+import os
 import asyncio
 import sys
 import yaml
@@ -13,6 +14,9 @@ import logging
 import random
 from typing import Dict, Any, List
 from datetime import datetime
+
+# Enable BACpypes3 broadcast support
+os.environ['BACPYPES_DEBUG'] = 'bacpypes3.ipv4'
 
 from bacpypes3.debugging import bacpypes_debugging, ModuleLogger
 from bacpypes3.app import Application
@@ -30,13 +34,13 @@ from bacpypes3.basetypes import DateTime, StatusFlags, ServicesSupported
 from bacpypes3.constructeddata import AnyAtomic
 from bacpypes3.pdu import Address, LocalBroadcast, GlobalBroadcast
 
-# Module logger
-_debug = 0
+# Module logger - enable for detailed BACpypes3 debugging
+_debug = 1
 _log = ModuleLogger(globals())
 
-# Setup logging
+# Setup logging with DEBUG level to see BACpypes3 internals
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler('bacnet_simulator.log'),
