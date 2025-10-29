@@ -10,9 +10,9 @@ device:
 
 # Network settings
 network:
-  # Network IP address of the machine running the simulator
-  # IMPORTANT: This must match the actual IP of THIS machine
-  # Client is at 192.168.29.200, Simulator is at 192.168.29.27
+  # Simulator IP: 192.168.29.27
+  # Subnet mask /24 enables broadcast to 192.168.29.255
+  # This ensures I-Am responses are broadcast correctly
   address: "192.168.29.27/24"
   port: 47808
 
