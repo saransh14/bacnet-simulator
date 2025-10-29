@@ -136,16 +136,18 @@ class BACnetSimulator:
         )
         
         # Set supported services (required for bacnet4j clients)
-        # This tells clients which BACnet services this device supports
-        services = ServicesSupported()
-        services['read-property'] = 1
-        services['read-property-multiple'] = 1
-        services['write-property'] = 1
-        services['who-is'] = 1
-        services['i-am'] = 1
-        services['who-has'] = 1
-        services['i-have'] = 1
-        device_object.protocolServicesSupported = services
+        # ServicesSupported is a bitstring - create a list where 1 = supported, 0 = not supported
+        # The list indices correspond to specific BACnet services
+        services_list = [0] * 40  # Initialize with 40 service bits
+        services_list[12] = 1  # read-property
+        services_list[14] = 1  # read-property-multiple
+        services_list[15] = 1  # write-property
+        services_list[0] = 1   # acknowledge-alarm
+        services_list[1] = 1   # cov-notification
+        services_list[26] = 1  # who-has
+        services_list[27] = 1  # who-is
+        
+        device_object.protocolServicesSupported = ServicesSupported(services_list)
         
         # Create network port object (required for BACpypes3)
         network_port_object = NetworkPortObject(
