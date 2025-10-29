@@ -10,10 +10,10 @@ device:
 
 # Network settings
 network:
-  # Network IP address detected: 192.168.29.200
-  # Using /24 netmask for broadcast support across WiFi network
-  # This allows other devices on 192.168.29.x to discover this simulator
-  address: "192.168.29.200/24"
+  # Network IP address of the machine running the simulator
+  # IMPORTANT: This must match the actual IP of THIS machine
+  # Client is at 192.168.29.200, Simulator is at 192.168.29.27
+  address: "192.168.29.27/24"
   port: 47808
 
 # BACnet objects to create
