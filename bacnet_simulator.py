@@ -55,17 +55,21 @@ class BroadcastAwareApplication(Application):
     This overrides the Who-Is handler to ensure I-Am is always broadcast,
     not unicast to the requesting client.
     """
+    
     async def do_WhoIsRequest(self, apdu: WhoIsRequest) -> None:
         """
-        Handle Who-Is requests and respond with broadcast I Am.
+        Handle Who-Is requests and respond with broadcast I-Am.
         
-        This ensures the I Am response goes to the broadcast address
+        This ensures the I-Am response goes to the broadcast address
         (e.g., 192.168.29.255) instead of unicast to the client.
         """
-        # Get device instance from our device object
+        if _debug:
+            BroadcastAwareApplication._debug("do_WhoIsRequest %r", apdu)
+        
+        # Get our device instance
         device_instance = self.device_object.objectIdentifier[1]
         
-        # Check if this Who-Is is filtered to specific device instances
+        # Check if the Who-Is is for us (or for all devices)
         if apdu.deviceInstanceRangeLowLimit is not None:
             if device_instance < apdu.deviceInstanceRangeLowLimit:
                 return
@@ -76,19 +80,10 @@ class BroadcastAwareApplication(Application):
         # Log the Who-Is request
         logger.info(f"Received Who-Is from {apdu.pduSource}")
         
-        # Respond with I Am to local broadcast
+        # Respond with I-Am to local broadcast
         # This sends to broadcast address (e.g., 192.168.29.255)
-        logger.info(f"Sending I Am response to broadcast")
+        logger.info(f"Sending I-Am response to broadcast")
         self.i_am(address=LocalBroadcast())
-    
-    async def do_ReadPropertyRequest(self, apdu):
-        """Log ReadProperty requests for debugging"""
-        logger.info(f"Received ReadProperty from {apdu.pduSource}")
-        logger.info(f"  Object: {apdu.objectIdentifier}")
-        logger.info(f"  Property: {apdu.propertyIdentifier}")
-        
-        # Call parent implementation
-        return await super().do_ReadPropertyRequest(apdu)
 
 
 @bacpypes_debugging
