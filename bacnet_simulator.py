@@ -126,15 +126,6 @@ class BACnetSimulator:
             # If no netmask specified, add /24 for typical networks
             address = f"{address}/24"
         
-        # Create device object with all required properties
-        device_object = DeviceObject(
-            objectIdentifier=("device", device_config.get('instance', 1001)),
-            objectName=device_config.get('name', 'BACnet Simulator'),
-            description=device_config.get('description', 'BACnet Device Simulator for Testing'),
-            vendorIdentifier=device_config.get('vendor_id', 999),
-            modelName=device_config.get('model', 'Virtual BACnet Device'),
-        )
-        
         # Set supported services (required for bacnet4j clients)
         # ServicesSupported is a bitstring - create a list where 1 = supported, 0 = not supported
         # The list indices correspond to specific BACnet services
@@ -147,7 +138,15 @@ class BACnetSimulator:
         services_list[26] = 1  # who-has
         services_list[27] = 1  # who-is
         
-        device_object.protocolServicesSupported = ServicesSupported(services_list)
+        # Create device object with all required properties including protocolServicesSupported
+        device_object = DeviceObject(
+            objectIdentifier=("device", device_config.get('instance', 1001)),
+            objectName=device_config.get('name', 'BACnet Simulator'),
+            description=device_config.get('description', 'BACnet Device Simulator for Testing'),
+            vendorIdentifier=device_config.get('vendor_id', 999),
+            modelName=device_config.get('model', 'Virtual BACnet Device'),
+            protocolServicesSupported=ServicesSupported(services_list),
+        )
         
         # Create network port object (required for BACpypes3)
         network_port_object = NetworkPortObject(
