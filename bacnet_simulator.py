@@ -26,7 +26,7 @@ from bacpypes3.local.multistate import (
     MultiStateOutputObject,
 )
 from bacpypes3.primitivedata import Real, Date, Time
-from bacpypes3.basetypes import DateTime, StatusFlags
+from bacpypes3.basetypes import DateTime, StatusFlags, ServicesSupported
 from bacpypes3.constructeddata import AnyAtomic
 from bacpypes3.pdu import Address, LocalBroadcast
 from bacpypes3.apdu import WhoIsRequest
@@ -126,7 +126,7 @@ class BACnetSimulator:
             # If no netmask specified, add /24 for typical networks
             address = f"{address}/24"
         
-        # Create device object
+        # Create device object with all required properties
         device_object = DeviceObject(
             objectIdentifier=("device", device_config.get('instance', 1001)),
             objectName=device_config.get('name', 'BACnet Simulator'),
@@ -134,6 +134,18 @@ class BACnetSimulator:
             vendorIdentifier=device_config.get('vendor_id', 999),
             modelName=device_config.get('model', 'Virtual BACnet Device'),
         )
+        
+        # Set supported services (required for bacnet4j clients)
+        # This tells clients which BACnet services this device supports
+        services = ServicesSupported()
+        services['read-property'] = 1
+        services['read-property-multiple'] = 1
+        services['write-property'] = 1
+        services['who-is'] = 1
+        services['i-am'] = 1
+        services['who-has'] = 1
+        services['i-have'] = 1
+        device_object.protocolServicesSupported = services
         
         # Create network port object (required for BACpypes3)
         network_port_object = NetworkPortObject(
