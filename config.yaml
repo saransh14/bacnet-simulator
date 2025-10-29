@@ -10,10 +10,10 @@ device:
 
 # Network settings
 network:
-  # Use "host" to auto-detect the local interface
-  # Or use specific IP with netmask like "192.168.1.100/24"
-  # Or use IP:port like "192.168.1.100:47808"
-  address: "host"
+  # Network IP address detected: 192.168.29.200
+  # Using /24 netmask for broadcast support across WiFi network
+  # This allows other devices on 192.168.29.x to discover this simulator
+  address: "192.168.29.200/24"
   port: 47808
 
 # BACnet objects to create

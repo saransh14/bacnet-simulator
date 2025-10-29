@@ -77,8 +77,13 @@ class BACnetSimulator:
         
         # Get network settings
         network_config = self.config.get('network', {})
-        address = network_config.get('address', 'host')
+        address = network_config.get('address', '192.168.29.200/24')
         port = network_config.get('port', 47808)
+        
+        # Format address properly for NetworkPortObject
+        if '/' not in address:
+            # If no netmask specified, add /24 for typical networks
+            address = f"{address}/24"
         
         # Create device object
         device_object = DeviceObject(
@@ -107,6 +112,10 @@ class BACnetSimulator:
         
         # Create objects
         await self._create_objects()
+        
+        # Note: BACpypes3 automatically responds to Who-Is requests with I-Am
+        # No need to manually broadcast I-Am - it handles this internally
+        logger.info("Device ready - will respond to Who-Is requests")
         
     async def _create_objects(self):
         """Create BACnet objects based on configuration"""

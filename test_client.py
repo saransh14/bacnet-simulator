@@ -34,7 +34,7 @@ _log = ModuleLogger(globals())
 class BACnetTestClient:
     """Test client for BACnet simulator"""
     
-    def __init__(self, address: str = "host:47809"):
+    def __init__(self, address: str = "127.0.0.1/32:47809"):
         """Initialize test client with address"""
         self.address = address
         self.app = None
@@ -156,6 +156,7 @@ class BACnetTestClient:
         # Test 1: Device Discovery
         logger.info("\n[Test 1] Device Discovery (Who-Is)")
         logger.info("-" * 60)
+        logger.info(f"Searching for device instance {target_device}...")
         i_ams = await self.who_is(target_device, target_device)
         
         if not i_ams:
@@ -280,8 +281,8 @@ async def main():
     parser = argparse.ArgumentParser(description='BACnet Test Client')
     parser.add_argument(
         '-a', '--address',
-        default='host:47809',
-        help='Client address (default: host:47809)'
+        default='127.0.0.1/32:47809',
+        help='Client address (default: 127.0.0.1/32:47809)'
     )
     parser.add_argument(
         '-d', '--device',
